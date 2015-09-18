@@ -10,14 +10,14 @@ var debug = require('debug')('ga');
  * @param list An array of available pieces in any format
  * @param fitness A function that takes in the sorted list for a permutation and returns the fitness
  *  as a number
- * @param permeate a boolean indicating whether to shuffle the order in the list
+ * @param permutate a boolean indicating whether to shuffle the order in the list
  * @param include a boolean indicating whether to shuffle if pieces are included in the list
  * @constructor
  */
-function GA(list, fitness, permeate, include){
-  this.list = list; this.fitness = fitness;
-  this.permutate = permeate;
-  this.include = include;
+function GA(list, fitness, permutate, include){
+    this.list = list; this.fitness = fitness;
+    this.permutate = permutate;
+    this.include = include;
 }
 
 /**
@@ -27,16 +27,70 @@ function GA(list, fitness, permeate, include){
  * @return [] The best solution from the genetic algorithm
  */
 GA.prototype.run = function (population, time){
-  //TODO implement function
+    //TODO implement function
 
-  //Create indices array and shuffle
+    var indices = [];
+    var inclusions = [];
+    //Create indices array and shuffle
+    for (var i = 0; i < population; i++){
+        var next;
+        if(this.permutate){
+            next = shuffleIndices();
+        }else{
+            next = incrementingOrder();
+        }
+        indices.push(next);
+        if(this.include){
+            next = booleanArrayGenerator();
+        }else{
+            next = generateTrue();
+        }
+        inclusions.push(next);
+    }
 
-  //Create boolean array and randomize
 
-  //while within time do generation
+    //Create boolean array and randomize
 
-  return reconstitute([], []);
+    //while within time do generation
+
+    return reconstitute([], []);
 };
+
+/**
+ * Generates an array of trues for all elements in list
+ * @returns {Array} An array of true the length of list
+ */
+function generateTrue(){
+    var arr = [];
+    this.list.forEach(function(){
+        arr.push(true);
+    });
+    return arr;
+}
+
+function incrementingOrder(){
+    var arr = [];
+    for(var i = 0; i < this.list.length; i++) {
+        arr.push(i);
+    }
+    return arr;
+}
+
+/**
+ * perform a shuffle on the indices to produce a candidate
+ * @return [] An array of indices in shuffled order
+ */
+function shuffleIndices(){
+    //do knuth shuffle (npm module)
+}
+
+/**
+ * Generate a random array of booleans the length of the list
+ * @return [] A list of boolean
+ */
+function booleanArrayGenerator(){
+
+}
 
 /**
  * Takes the internal array representations of the sorting and convert it into an array
@@ -46,8 +100,8 @@ GA.prototype.run = function (population, time){
  * @return [] An array containing objects from the list
  */
 function reconstitute(order, included){
-  //TODO implement function
-  return [];
+    //TODO implement function
+    return [];
 }
 
 function orderOneCrossover(arr1, arr2, switchedArrays) {
