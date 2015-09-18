@@ -4,6 +4,7 @@
   "description": "Some problems solved with genetic algorithms for an AI class",
   "main": "src/app.js",
   "dependencies": {
+    "debug": "^2.2.0",
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.11.3"
   },

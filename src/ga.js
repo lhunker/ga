@@ -3,6 +3,7 @@
  * ga.js
  * The base Genetic Algorithm class
  */
+var debug = require('debug')('ga');
 
 /**
  * The constructor for the GA class - used to run a genetic algorithm
@@ -50,8 +51,8 @@ function reconstitute(order, included){
 }
 
 function orderOneCrossover(arr1, arr2, switchedArrays) {
-    console.log('Array 1: ' + arr1.join(', '));
-    console.log('Array 2: ' + arr2.join(', '));
+    debug('Array 1: ' + arr1.join(', '));
+    debug('Array 2: ' + arr2.join(', '));
     // Select a random starting point at least one away from the end
     var start = Math.floor(Math.random() * (arr1.length - 1));
     // Select a length to keep
@@ -59,24 +60,24 @@ function orderOneCrossover(arr1, arr2, switchedArrays) {
     if (len === 0) {
         len = 1;
     }
-    console.log('Start: ' + start + ', Length: ' + len);
+    debug('Start: ' + start + ', Length: ' + len);
     // Create child1 from that range
     var child1 = arr1.slice(start, start + len);
-    console.log('Child 1: ' + child1.join(', '));
+    debug('Child 1: ' + child1.join(', '));
     var parent2 = [];
     var i;
     // Create a copy of arr2
     for (i = 0; i < arr2.length; i++) parent2.push(arr2[i]);
     // and then remove values from the new child
     for (i = 0; i < child1.length; i++) parent2.splice(parent2.indexOf(child1[i]), 1);
-    console.log('Updated array 2: ' + parent2.join(', '));
+    debug('Updated array 2: ' + parent2.join(', '));
     // Copy values at right edge of array, - 1 because indexes aren't inclusive
     var rightCount = arr2.length - start - len;
     var leftCount = parent2.length - rightCount;
     for (i = rightCount; i > 0; i--) child1.push(parent2[parent2.length - i]);
     // Copy remaining values to left edge
     for (i = leftCount - 1; i >= 0; i--) child1.splice(0, 0, parent2[i]);
-    console.log('Completed child 1: ' + child1.join(', '));
+    debug('Completed child 1: ' + child1.join(', '));
     var child2;
     if (!switchedArrays) child2 = orderOneCrossover(arr2, arr1, true);
     else return child1;
