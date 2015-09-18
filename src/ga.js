@@ -49,14 +49,14 @@ function reconstitute(order, included){
   return [];
 }
 
-function orderOneCrossover(arr1, arr2, switched_arrays) {
+function orderOneCrossover(arr1, arr2, switchedArrays) {
     console.log("Array 1: " + arr1.join(", "));
     console.log("Array 2: " + arr2.join(", "));
     // Select a random starting point at least one away from the end
     var start = Math.floor(Math.random() * (arr1.length - 1));
     // Select a length to keep
     var len = Math.floor(Math.random() * (arr1.length - start));
-    if (len == 0) {
+    if (len === 0) {
         len = 1;
     }
     console.log("Start: " + start + ", Length: " + len);
@@ -78,7 +78,7 @@ function orderOneCrossover(arr1, arr2, switched_arrays) {
     for (i = leftCount - 1; i >= 0; i--) child1.splice(0, 0, parent2[i]);
     console.log("Completed child 1: " + child1.join(", "));
     var child2;
-    if (!switched_arrays) child2 = orderOneCrossover(arr2, arr1, true);
+    if (!switchedArrays) child2 = orderOneCrossover(arr2, arr1, true);
     else return child1;
     return {child1: child1, child2: child2};
 }
