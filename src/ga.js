@@ -89,7 +89,9 @@ function shuffleIndices(){
  * @return [] A list of boolean
  */
 function booleanArrayGenerator(){
-
+    var arr = [];
+    for (var i = 0; i < this.list.length; i++) arr.push(Math.random() > .5);
+    return arr;
 }
 
 /**
