@@ -4,6 +4,7 @@
  * The base Genetic Algorithm class
  */
 var debug = require('debug')('ga');
+var shuffle = require('knuth-shuffle').knuthShuffle;
 
 /**
  * The constructor for the GA class - used to run a genetic algorithm
@@ -81,7 +82,8 @@ function incrementingOrder(){
  * @return [] An array of indices in shuffled order
  */
 function shuffleIndices(){
-    //do knuth shuffle (npm module)
+    var arr = incrementingOrder();
+    return shuffle(arr.slice(0));
 }
 
 /**
@@ -141,3 +143,4 @@ function orderOneCrossover(arr1, arr2, switchedArrays) {
 }
 
 module.exports = GA;
+
