@@ -104,8 +104,9 @@ function booleanArrayGenerator(){
  * @return [] An array containing objects from the list
  */
 function reconstitute(order, included){
-    //TODO implement function
-    return [];
+    var arr = [];
+    for (var i = 0; i < included.length; i++) if (included[i]) arr.push(order[i]);
+    return arr;
 }
 
 function orderOneCrossover(arr1, arr2, switchedArrays) {
