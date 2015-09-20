@@ -103,9 +103,13 @@ function booleanArrayGenerator(){
  *  indicates if that number should be included in the result
  * @return [] An array containing objects from the list
  */
-function reconstitute(order, included){
+function reconstitute(order, included) {
     var arr = [];
-    for (var i = 0; i < included.length; i++) if (included[i]) arr.push(order[i]);
+    for (var i = 0; i < included.length; i++) {
+        if (included[i]) {
+            arr.push(this.list[order[i]]);
+        }
+    }
     return arr;
 }
 
