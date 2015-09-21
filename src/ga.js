@@ -5,6 +5,7 @@
  */
 var debug = require('debug')('ga');
 var shuffle = require('knuth-shuffle').knuthShuffle;
+var moment = require('moment');
 
 /**
  * The constructor for the GA class - used to run a genetic algorithm
@@ -16,7 +17,8 @@ var shuffle = require('knuth-shuffle').knuthShuffle;
  * @constructor
  */
 function GA(list, fitness, permutate, include){
-    this.list = list; this.fitness = fitness;
+    this.list = list;
+    this.fitness = fitness;
     this.permutate = permutate;
     this.include = include;
 }
@@ -36,42 +38,71 @@ GA.prototype.run = function (population, time){
     for (var i = 0; i < population; i++){
         var next;
         if(this.permutate){
-            next = shuffleIndices();
+            next = shuffleIndices(this.list.length);
         }else{
-            next = incrementingOrder();
+            next = incrementingOrder(this.list.length);
         }
         indices.push(next);
         if(this.include){
-            next = booleanArrayGenerator();
+            next = booleanArrayGenerator(this.list.length);
         }else{
-            next = generateTrue();
+            next = generateTrue(this.list);
         }
         inclusions.push(next);
     }
 
-
-    //Create boolean array and randomize
-
     //while within time do generation
+    var start = moment();
+    var end = moment(start).add(time, 's'); //TODO assuming seconds for now
+    while (moment().isBefore(end)) {
+        orderOneCrossover([1], [1]);
+        //Do loop
+    }
 
-    return reconstitute([], []);
+    return findBest(indices, inclusions, this.list, this.fitness);
 };
+
+/**
+ * Given all members of the population, finds the most fit
+ * @param indicies the list of orderings
+ * @param include the list of whether or not an index is included
+ * @param list all pieces in the game
+ * @returns {*[]} The best solution in the population
+ */
+function findBest(indicies, include, list, fitfunc){
+    var fitness = 0;
+    var index = 0;
+    for(var i = 0; i < indicies.length; i++){
+        var compare = reconstitute(indicies[i], include[i], list);
+        var val = fitfunc(compare);
+        if (val > fitness){
+            fitness = val;
+            index = i;
+        }
+    }
+    return reconstitute(indicies[index], include[index], list);
+}
 
 /**
  * Generates an array of trues for all elements in list
  * @returns {Array} An array of true the length of list
  */
-function generateTrue(){
+function generateTrue(list){
     var arr = [];
-    this.list.forEach(function(){
+    list.forEach(function(){
         arr.push(true);
     });
     return arr;
 }
 
-function incrementingOrder(){
+/**
+ * Produces a list of incrementing numbers from 0 to num not including num
+ * @param num The max number to loop to
+ * @returns {Array} An array of numbers in increasing order
+ */
+function incrementingOrder(num){
     var arr = [];
-    for(var i = 0; i < this.list.length; i++) {
+    for(var i = 0; i < num; i++) {
         arr.push(i);
     }
     return arr;
@@ -79,20 +110,22 @@ function incrementingOrder(){
 
 /**
  * perform a shuffle on the indices to produce a candidate
+ * @param num the number of indicies to shuffle
  * @return [] An array of indices in shuffled order
  */
-function shuffleIndices(){
-    var arr = incrementingOrder();
+function shuffleIndices(num){
+    var arr = incrementingOrder(num);
     return shuffle(arr.slice(0));
 }
 
 /**
  * Generate a random array of booleans the length of the list
+ * @param num number of booleans to generate
  * @return [] A list of boolean
  */
-function booleanArrayGenerator(){
+function booleanArrayGenerator(num){
     var arr = [];
-    for (var i = 0; i < this.list.length; i++) arr.push(Math.random() > .5);
+    for (var i = 0; i < num; i++) arr.push(Math.random() > 0.5);
     return arr;
 }
 
@@ -101,18 +134,21 @@ function booleanArrayGenerator(){
  * @param order An array with indices of the list in the desired order
  * @param included An array of booleans corresponding to the indices in order
  *  indicates if that number should be included in the result
+ * @param list the list of all pieces
  * @return [] An array containing objects from the list
  */
-function reconstitute(order, included) {
+function reconstitute(order, included, list) {
+    debug(order + ' ' + included);
     var arr = [];
     for (var i = 0; i < included.length; i++) {
         if (included[i]) {
-            arr.push(this.list[order[i]]);
+            arr.push(list[order[i]]);
         }
     }
     return arr;
 }
 
+//TODO Brett please document this
 function orderOneCrossover(arr1, arr2, switchedArrays) {
     debug('Array 1: ' + arr1.join(', '));
     debug('Array 2: ' + arr2.join(', '));
