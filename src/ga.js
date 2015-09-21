@@ -109,6 +109,14 @@ function reconstitute(order, included){
     return arr;
 }
 
+/**
+ * Performs an order one crossover using given arrays
+ * @param arr1 First parent array
+ * @param arr2 Second parent array
+ * @param switchedArrays Boolean if parent arrays should be switched
+ *        when creating a child
+ * @return Object containing child1 array and child2 array
+ */
 function orderOneCrossover(arr1, arr2, switchedArrays) {
     debug('Array 1: ' + arr1.join(', '));
     debug('Array 2: ' + arr2.join(', '));
