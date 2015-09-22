@@ -55,32 +55,60 @@ GA.prototype.run = function (population, time){
     var start = moment();
     var end = moment(start).add(time, 's'); //TODO assuming seconds for now
     while (moment().isBefore(end)) {
-        orderOneCrossover([1], [1]);
-        //Do loop
-    }
+        var combine = selectParents(indices, inclusions);
+        var children = {indices: [], include: []};
+        for(var j = 0; j < combine.indices.length; j += 2) {
+            var nxt = orderOneCrossover(combine.indices[j], combine.indices[j+1], false);
+            children.indices.push(nxt.child1);
+            children.indices.push(nxt.child2);
+            //TODO crossover booleans (currently just copies parent)
+            //TODO check whether both should be crossed
+            children.include.push(combine.include[j]);
+            children.include.push(combine.include[j+1]);
 
+
+        }
+        //TODO implement mutation
+        //TODO implement elitism?
+        //TODO cull children?
+        indices = children.indices;
+        inclusions = children.include;
+    }
     return findBest(indices, inclusions, this.list, this.fitness);
 };
 
 /**
+ * Select the parents to be combined
+ * @param indices the population in the indices representation
+ * @param include the population in the boolean representation
+ * @returns {{indices: Array, include: Array}} The sets of parents to be combined. Parents will be
+ *  combined in order of array, 0 with 1, 2 with 3, etc...
+ */
+function selectParents(indices, include){
+    //TODO implement function
+    return {indices: indices, include: include};
+}
+
+/**
  * Given all members of the population, finds the most fit
- * @param indicies the list of orderings
+ * @param indices the list of orderings
  * @param include the list of whether or not an index is included
  * @param list all pieces in the game
+ * @param fitfunc the fitness function to run on each answer
  * @returns {*[]} The best solution in the population
  */
-function findBest(indicies, include, list, fitfunc){
+function findBest(indices, include, list, fitfunc){
     var fitness = 0;
     var index = 0;
-    for(var i = 0; i < indicies.length; i++){
-        var compare = reconstitute(indicies[i], include[i], list);
+    for(var i = 0; i < indices.length; i++){
+        var compare = reconstitute(indices[i], include[i], list);
         var val = fitfunc(compare);
         if (val > fitness){
             fitness = val;
             index = i;
         }
     }
-    return reconstitute(indicies[index], include[index], list);
+    return reconstitute(indices[index], include[index], list);
 }
 
 /**
@@ -157,8 +185,8 @@ function reconstitute(order, included, list) {
  * @return Object containing child1 array and child2 array
  */
 function orderOneCrossover(arr1, arr2, switchedArrays) {
-    debug('Array 1: ' + arr1.join(', '));
-    debug('Array 2: ' + arr2.join(', '));
+    //debug('Array 1: ' + arr1.join(', '));
+    //debug('Array 2: ' + arr2.join(', '));
     // Select a random starting point at least one away from the end
     var start = Math.floor(Math.random() * (arr1.length - 1));
     // Select a length to keep
@@ -166,11 +194,11 @@ function orderOneCrossover(arr1, arr2, switchedArrays) {
     if (len === 0) {
         len = 1;
     }
-    debug('Start: ' + start + ', Length: ' + len);
+    //debug('Start: ' + start + ', Length: ' + len);
 
     // Create child1 from that range
     var child1 = arr1.slice(start, start + len);
-    debug('Child 1: ' + child1.join(', '));
+    //debug('Child 1: ' + child1.join(', '));
     var parent2 = [];
     var i;
 
@@ -183,7 +211,7 @@ function orderOneCrossover(arr1, arr2, switchedArrays) {
     for (i = 0; i < child1.length; i++) {
         parent2.splice(parent2.indexOf(child1[i]), 1);
     }
-    debug('Updated array 2: ' + parent2.join(', '));
+    //debug('Updated array 2: ' + parent2.join(', '));
     // Copy values at right edge of array, - 1 because indexes aren't inclusive
     var rightCount = arr2.length - start - len;
     var leftCount = parent2.length - rightCount;
@@ -195,7 +223,7 @@ function orderOneCrossover(arr1, arr2, switchedArrays) {
     for (i = leftCount - 1; i >= 0; i--) {
         child1.splice(0, 0, parent2[i]);
     }
-    debug('Completed child 1: ' + child1.join(', '));
+    //debug('Completed child 1: ' + child1.join(', '));
 
     //Either generate second child or return
     var child2;
