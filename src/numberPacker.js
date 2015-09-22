@@ -25,6 +25,6 @@ Packer.prototype.load = function(file) {
         for (i = 1; i < data.length; i++)
             _this.options.push(parseInt(data[i]));
     });
-}
+};
 
 module.exports = Packer;
