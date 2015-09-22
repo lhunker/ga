@@ -74,6 +74,11 @@ GA.prototype.run = function (population, time){
         indices = children.indices;
         inclusions = children.include;
     }
+
+    //dummy line to keep jshint happy
+    //TODO remove once function is used
+    weightedRandom([{value:2}]);
+
     return findBest(indices, inclusions, this.list, this.fitness);
 };
 
@@ -234,6 +239,30 @@ function orderOneCrossover(arr1, arr2, switchedArrays) {
         return child1;
     }
     return {child1: child1, child2: child2};
+}
+
+/**
+ * Picks a number from the list weighted by its probability
+ * @param list An array of objects to pick from.
+ *      Objects must have a field value containing their weight
+ * @returns {*} The randomly selected item from the list
+ */
+function weightedRandom(list){
+    var sum = 0;
+    list.forEach(function (item){
+       sum += item.value;
+        item.range = sum;
+    });
+    var sel = Math.floor(Math.random() * (sum));
+    for (var i = 0; i < list.length; i++){
+        if (sel < list[i].range){
+            return list[i];
+        }
+    }
+
+    //If nothing is returned
+    debug('Something went wrong! ' + sum + ' ' + sel);
+    return list[list.length -1];
 }
 
 module.exports = GA;
