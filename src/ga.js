@@ -167,26 +167,44 @@ function orderOneCrossover(arr1, arr2, switchedArrays) {
         len = 1;
     }
     debug('Start: ' + start + ', Length: ' + len);
+
     // Create child1 from that range
     var child1 = arr1.slice(start, start + len);
     debug('Child 1: ' + child1.join(', '));
     var parent2 = [];
     var i;
+
     // Create a copy of arr2
-    for (i = 0; i < arr2.length; i++) parent2.push(arr2[i]);
+    for (i = 0; i < arr2.length; i++){
+        parent2.push(arr2[i]);
+    }
+
     // and then remove values from the new child
-    for (i = 0; i < child1.length; i++) parent2.splice(parent2.indexOf(child1[i]), 1);
+    for (i = 0; i < child1.length; i++) {
+        parent2.splice(parent2.indexOf(child1[i]), 1);
+    }
     debug('Updated array 2: ' + parent2.join(', '));
     // Copy values at right edge of array, - 1 because indexes aren't inclusive
     var rightCount = arr2.length - start - len;
     var leftCount = parent2.length - rightCount;
-    for (i = rightCount; i > 0; i--) child1.push(parent2[parent2.length - i]);
+    for (i = rightCount; i > 0; i--) {
+        child1.push(parent2[parent2.length - i]);
+    }
+
     // Copy remaining values to left edge
-    for (i = leftCount - 1; i >= 0; i--) child1.splice(0, 0, parent2[i]);
+    for (i = leftCount - 1; i >= 0; i--) {
+        child1.splice(0, 0, parent2[i]);
+    }
     debug('Completed child 1: ' + child1.join(', '));
+
+    //Either generate second child or return
     var child2;
-    if (!switchedArrays) child2 = orderOneCrossover(arr2, arr1, true);
-    else return child1;
+    if (!switchedArrays) {
+        child2 = orderOneCrossover(arr2, arr1, true);
+    }
+    else {
+        return child1;
+    }
     return {child1: child1, child2: child2};
 }
 
