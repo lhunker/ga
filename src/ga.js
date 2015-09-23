@@ -74,8 +74,9 @@ GA.prototype.run = function (population, time){
             children.include.push(boolChld.child1 || combine.include[j]);
             children.include.push(boolChld.child2 || combine.include[j + 1]);
 
-            //TODO make conditional
-            //children = mutate(children.indices, children.include, 2);
+            if (process.env.MUTATE) {
+                children = mutate(children.indices, children.include, process.env.MUTATE);
+            }
         }
         //TODO implement elitism option
         //TODO make conditional, this also won't do anything since being reassigned right below
@@ -86,7 +87,7 @@ GA.prototype.run = function (population, time){
 
     console.log('Generations: ' + generations); //TODO move to app
     var best = findBest(indices, inclusions, this.list, this.fitness);
-    return best.toString() + ', score: ' + this.fitness(best).toString();
+    return JSON.stringify(best) + ', score: ' + JSON.stringify(this.fitness(best));
 };
 
 /**
