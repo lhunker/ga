@@ -10,8 +10,8 @@
 var GA = require('./ga');
 var fitness = function(list){
   var sum = 0;
-    list.forEach(function (l){
-        sum += l;
+    list.forEach(function (l, i) {
+        sum += l * i;
     });
     return sum;
 };

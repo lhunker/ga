@@ -4,7 +4,7 @@
  * The base Genetic Algorithm class
  */
 var debug = require('debug')('ga');
-var shuffle = require('knuth-shuffle').knuthShuffle;
+var _ = require('underscore');
 var moment = require('moment');
 
 /**
@@ -30,8 +30,6 @@ function GA(list, fitness, permutate, include){
  * @return [] The best solution from the genetic algorithm
  */
 GA.prototype.run = function (population, time){
-    //TODO implement function
-
     var indices = [];
     var inclusions = [];
     //Create indices array and shuffle
@@ -147,7 +145,7 @@ function incrementingOrder(num){
  */
 function shuffleIndices(num){
     var arr = incrementingOrder(num);
-    return shuffle(arr.slice(0));
+    return _.shuffle(arr.slice(0));
 }
 
 /**
