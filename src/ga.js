@@ -52,7 +52,9 @@ GA.prototype.run = function (population, time){
     //while within time do generation
     var start = moment();
     var end = moment(start).add(time, 's'); //TODO assuming seconds for now
+    var generations = 0;
     while (moment().isBefore(end)) {
+        generations++;
         // TODO update the last argument to reflect true number of parents to return
         var combine = selectParents(indices, inclusions, this.fitness, this.list, population);
         var children = {indices: [], include: []};
@@ -76,6 +78,7 @@ GA.prototype.run = function (population, time){
         inclusions = children.include;
     }
 
+    console.log('Generations: ' + generations); //TODO move to app
     return findBest(indices, inclusions, this.list, this.fitness);
 };
 
@@ -116,11 +119,11 @@ function selectParents(indices, include, fitFunc, list, returnNo){
     for (var i = 0; i < returnNo; i += 2) {
         var o = weightedRandom(arrs);
         // TODO figure out correct tolerance - currently 20%
-        while (o.picked >= 0.2 * returnNo) o = weightedRandom(arrs);
+        while (o.picked > 0.3 * returnNo) o = weightedRandom(arrs);
         o.picked++;
         var o2 = weightedRandom(arrs);
         // TODO figure out correct tolerance - currently 20%
-        while ((o.indices === o2.indices && o.list === o2.list) || o2.picked >= 0.2 * returnNo) o2 = weightedRandom(arrs);
+        while ((o.indices === o2.indices && o.list === o2.list) || o2.picked > 0.3 * returnNo) o2 = weightedRandom(arrs);
         o2.picked++;
         parentLists.push(o.list);
         parentLists.push(o2.list);
