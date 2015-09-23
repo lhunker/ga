@@ -4,7 +4,7 @@
  * The base Genetic Algorithm class
  */
 var debug = require('debug')('ga');
-var shuffle = require('knuth-shuffle').knuthShuffle;
+var _ = require('underscore');
 var moment = require('moment');
 
 /**
@@ -30,8 +30,6 @@ function GA(list, fitness, permutate, include){
  * @return [] The best solution from the genetic algorithm
  */
 GA.prototype.run = function (population, time){
-    //TODO implement function
-
     var indices = [];
     var inclusions = [];
     //Create indices array and shuffle
@@ -68,8 +66,10 @@ GA.prototype.run = function (population, time){
             //TODO check whether both should be crossed
             children.include.push(boolChld.child1);
             children.include.push(boolChld.child2);
+
+            //TODO make conditional
+            children = mutate(children.indices, children.include, 2);
         }
-        //TODO implement mutation
         //TODO implement elitism option
         //TODO cull population option
         indices = children.indices;
@@ -184,7 +184,7 @@ function incrementingOrder(num){
  */
 function shuffleIndices(num){
     var arr = incrementingOrder(num);
-    return shuffle(arr.slice(0));
+    return _.shuffle(arr.slice(0));
 }
 
 /**
@@ -194,7 +194,9 @@ function shuffleIndices(num){
  */
 function booleanArrayGenerator(num){
     var arr = [];
-    for (var i = 0; i < num; i++) arr.push(Math.random() > 0.5);
+    for (var i = 0; i < num; i++) {
+        arr.push(Math.random() > 0.5);
+    }
     return arr;
 }
 
@@ -229,9 +231,9 @@ function orderOneCrossover(arr1, arr2, switchedArrays) {
     //debug('Array 1: ' + arr1.join(', '));
     //debug('Array 2: ' + arr2.join(', '));
     // Select a random starting point at least one away from the end
-    var start = Math.floor(Math.random() * (arr1.length - 1));
+    var start = _.random(0, arr1.length - 1);
     // Select a length to keep
-    var len = Math.floor(Math.random() * (arr1.length - start));
+    var len = _.random(0, arr1.length - start);
     if (len === 0) {
         len = 1;
     }
@@ -301,7 +303,7 @@ function weightedRandom(list){
        sum += item.value;
         item.range = sum;
     });
-    var sel = Math.floor(Math.random() * (sum));
+    var sel = _.random(0, sum - 1);
     for (var i = 0; i < list.length; i++){
         if (sel < list[i].range){
             return list[i];
@@ -311,6 +313,42 @@ function weightedRandom(list){
     //If nothing is returned
     debug('Something went wrong! ' + sum + ' ' + sel);
     return list[list.length -1];
+}
+
+/**
+ * Performs num random mutations on the population
+ * Each mutation consists of swapping 2 indices and flipping one include
+ * @param indices the population as indices
+ * @param include the population in boolean inclue representation
+ * @param num The number of mutations to perform
+ * @returns {{indices: *, include: *}} The population with mutants
+ */
+function mutate(indices, include, num) {
+    //Do num random mutation pairs
+    for (var i = 0; i < num; i++) {
+        //Pick member
+        var member = _.random(0, indices.length - 1);
+        //Pick two indexes to swap
+        var pos1 = _.random(0, indices[member].length - 1);  //The first position to switch
+        var pos2 = pos1;
+        //Keep picking until they are differant numbers
+        while (pos2 === pos1) {
+            pos2 = _.random(0, indices[member].length - 1);
+        }
+        debug('Swapping ' + member + ' ' + pos1 + ' ' + pos2);
+
+        //Perform swap
+        var tmp = indices[member][pos1];
+        indices[member][pos1] = indices[member][pos2];
+        indices[member][pos2] = tmp;
+
+        //Randomly flip an include
+        var flip = _.random(0, include[member].length - 1);
+        include[member][flip] = !include[member][flip];
+        debug('Flipping ' + member + ' ' + flip);
+    }
+
+    return {indices: indices, include: include};
 }
 
 module.exports = GA;
