@@ -73,7 +73,8 @@ GA.prototype.run = function (population, time){
             //children = mutate(children.indices, children.include, 2);
         }
         //TODO implement elitism option
-        //TODO cull population option
+        //TODO make conditional, this also won't do anything since being reassigned right below
+        cull(createScoredArray(indices, inclusions, this.fitness, this.list));
         indices = children.indices;
         inclusions = children.include;
     }
@@ -81,6 +82,32 @@ GA.prototype.run = function (population, time){
     console.log('Generations: ' + generations); //TODO move to app
     return findBest(indices, inclusions, this.list, this.fitness);
 };
+
+/**
+ * Selects array members to kill using tournament selection
+ * Therefore, 50% of the list will be culled each iteration
+ * @param pieces a list of objects created by createScoredArray
+ * @returns {} containing indices and inclusions
+ */
+function cull(pieces) {
+    var indices = [];
+    var inclusions = [];
+    for (var i = 0; i < pieces.length; i += 2) {
+        var obj1 = pieces[i];
+        var obj2 = pieces[i + 1];
+
+        var maxObject = obj1.value > obj2.value ? obj1 : obj2;
+        var minObject = obj1.value < obj2.value ? obj1 : obj2;
+        if (Math.random() * (obj1.value + obj2.value) < maxObject.value) {
+            indices.push(maxObject.indices);
+            inclusions.push(maxObject.include);
+        } else {
+            indices.push(minObject.indices);
+            inclusions.push(minObject.include);
+        }
+    }
+    return {indices: indices, inclusions: inclusions};
+}
 
 /**
  * Converts index/include arrays to object including score
@@ -295,6 +322,7 @@ function orderOneCrossover(arr1, arr2, switchedArrays) {
  */
 function booleanCrossover(arr1, arr2) {
     //TODO implement function
+    // TODO probably don't actually need this?
 
     return {child1: arr1, child2: arr2};
 }
