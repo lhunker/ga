@@ -27,7 +27,8 @@ if (!process.argv[3]) {
 
 probObj = new ProbClass();
 probObj.loadFile(process.argv[3], function () {
-    var ga = new GA(probObj.list, probObj.fitness.bind(probObj), true, true);
+    var ga = new GA(probObj.list, probObj.fitness.bind(probObj),
+        probObj.permutate, probObj.include);
 
     console.info('Solution = ' + ga.run(10, 5));
 });
