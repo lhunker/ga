@@ -70,17 +70,45 @@ GA.prototype.run = function (population, time){
             children.include.push(boolChld.child2);
 
             //TODO make conditional
-            children = mutate(children.indices, children.include, 2);
+            //children = mutate(children.indices, children.include, 2);
         }
         //TODO implement elitism option
-        //TODO cull population option
+        //TODO make conditional, this also won't do anything since being reassigned right below
+        //cull(createScoredArray(indices, inclusions, this.fitness, this.list));
         indices = children.indices;
         inclusions = children.include;
     }
 
     console.log('Generations: ' + generations); //TODO move to app
-    return findBest(indices, inclusions, this.list, this.fitness);
+    best = findBest(indices, inclusions, this.list, this.fitness);
+    return best.toString() + ", score: " + this.fitness(best).toString();
 };
+
+/**
+ * Selects array members to kill using tournament selection
+ * Therefore, 50% of the list will be culled each iteration
+ * @param pieces a list of objects created by createScoredArray
+ * @returns {} containing indices and inclusions
+ */
+function cull(pieces) {
+    var indices = [];
+    var inclusions = [];
+    for (var i = 0; i < pieces.length; i += 2) {
+        var obj1 = pieces[i];
+        var obj2 = pieces[i + 1];
+
+        var maxObject = obj1.value > obj2.value ? obj1 : obj2;
+        var minObject = obj1.value < obj2.value ? obj1 : obj2;
+        if (Math.random() * (obj1.value + obj2.value) < maxObject.value) {
+            indices.push(maxObject.indices);
+            inclusions.push(maxObject.include);
+        } else {
+            indices.push(minObject.indices);
+            inclusions.push(minObject.include);
+        }
+    }
+    return {indices: indices, inclusions: inclusions};
+}
 
 /**
  * Converts index/include arrays to object including score
@@ -94,7 +122,7 @@ function createScoredArray(indices, include, fitFunc, list) {
     var arrs = [];
     for (var i = 0; i < indices.length; i++) {
         var score = fitFunc(reconstitute(indices[i], include[i], list));
-        var o = {value: score, list: indices[i], include: include[i], picked: 0};
+        var o = {value: score, indices: indices[i], include: include[i]};
         arrs.push(o);
     }
     return arrs;
@@ -117,18 +145,23 @@ function selectParents(indices, include, fitFunc, list, returnNo){
     var parentIncludes = [];
     // Get weighted random two at a time to ensure they are not the same
     for (var i = 0; i < returnNo; i += 2) {
-        var o = weightedRandom(arrs);
-        // TODO figure out correct tolerance - currently 20%
-        while (o.picked > 0.3 * returnNo) o = weightedRandom(arrs);
-        o.picked++;
-        var o2 = weightedRandom(arrs);
-        // TODO figure out correct tolerance - currently 20%
-        while ((o.indices === o2.indices && o.list === o2.list) || o2.picked > 0.3 * returnNo) o2 = weightedRandom(arrs);
-        o2.picked++;
-        parentLists.push(o.list);
-        parentLists.push(o2.list);
-        parentIncludes.push(o.include);
-        parentIncludes.push(o2.include);
+        var j = weightedRandom(arrs);
+        var jScore = arrs[j].value;
+        arrs[j].value = 0;
+        //arrs[j].value -= 2;
+        //if (arrs[j].value <= 0)
+            //arrs[j].value = 1;
+        var j2 = weightedRandom(arrs);
+        while (j === j2)
+            j2 = weightedRandom(arrs);
+        arrs[j].value = jScore;
+        //arrs[j2].value -= 2;
+        //if (arrs[j2].value <= 0)
+            //arrs[j2].value = 1;
+        parentLists.push(arrs[j].indices);
+        parentLists.push(arrs[j2].indices);
+        parentIncludes.push(arrs[j].include);
+        parentIncludes.push(arrs[j2].include);
     }
     return {indices: parentLists, include: parentIncludes};
 }
@@ -286,7 +319,7 @@ function orderOneCrossover(arr1, arr2, switchedArrays) {
  * Picks a number from the list weighted by its probability
  * @param list An array of objects to pick from.
  *      Objects must have a field value containing their weight
- * @returns {*} The randomly selected item from the list
+ * @returns number index of selected item
  */
 function weightedRandom(list){
     var sum = 0;
@@ -297,13 +330,13 @@ function weightedRandom(list){
     var sel = _.random(0, sum - 1);
     for (var i = 0; i < list.length; i++){
         if (sel < list[i].range){
-            return list[i];
+            return i;
         }
     }
 
     //If nothing is returned
     debug('Something went wrong! ' + sum + ' ' + sel);
-    return list[_.random(list.length - 1)];
+    return _.random(list.length - 1);
 }
 
 /**
