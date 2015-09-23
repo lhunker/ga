@@ -32,6 +32,10 @@ Packer.prototype.loadFile = function(file, callback) {
     });
 };
 
+/**
+ * Sets goal
+ * @param goal value to set goal to
+ */
 Packer.prototype.setGoal = function(goal) {
     this.goal = goal;
 };

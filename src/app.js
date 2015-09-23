@@ -12,8 +12,7 @@ var problem = parseInt(process.argv[2]);
 if (problem === 1) {
     ProbClass = require('./Packer');
 } else if (problem === 2) {
-    //TODO switch in class 2
-    ProbClass = require('./Packer');
+    ProbClass = require('./Bin');
 } else if (problem === 3) {
     ProbClass = require('./Tower');
 } else {
