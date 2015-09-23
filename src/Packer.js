@@ -6,6 +6,8 @@ var fs = require('fs');
 function Packer() {
     this.goal = 0;
     this.list = [];
+    this.permutate = false;
+    this.include = true;
 }
 
 /**
