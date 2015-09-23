@@ -67,7 +67,7 @@ GA.prototype.run = function (population, time){
             children.indices.push(nxt.child2 || combine.indices[j + 1]);
 
             //Perform boolean crossover
-            var boolChld;
+            var boolChld = {};
             if (this.include) {
                 boolChld = orderOneCrossover(combine.include[j], combine.include[j + 1], false);
             }
