@@ -55,7 +55,8 @@ GA.prototype.run = function (population, time){
     var start = moment();
     var end = moment(start).add(time, 's'); //TODO assuming seconds for now
     while (moment().isBefore(end)) {
-        var combine = selectParents(indices, inclusions);
+        // TODO update the last argument to reflect true number of parents to return
+        var combine = selectParents(indices, inclusions, this.fitness, this.list, population);
         var children = {indices: [], include: []};
         for(var j = 0; j < combine.indices.length; j += 2) {
             var nxt = orderOneCrossover(combine.indices[j], combine.indices[j+1], false);
@@ -79,18 +80,54 @@ GA.prototype.run = function (population, time){
 };
 
 /**
+ * Converts index/include arrays to object including score
+ * @param indices the population in the indices representation
+ * @param include the population in the boolean representation
+ * @param fitFunc the fitness function to use to evaluate options
+ * @param list the list of all pieces for this puzzle
+ * @returns [ {}, ... ] containing indices, include, and score
+ */
+function createScoredArray(indices, include, fitFunc, list) {
+    var arrs = [];
+    for (var i = 0; i < indices.length; i++) {
+        var score = fitFunc(reconstitute(indices[i], include[i], list));
+        var o = {value: score, list: indices[i], include: include[i], picked: 0};
+        arrs.push(o);
+    }
+    return arrs;
+}
+
+/**
  * Select the parents to be combined
  * @param indices the population in the indices representation
  * @param include the population in the boolean representation
+ * @param fitFunc the fitness function to use to evaluate options
+ * @param list the list of all pieces for this puzzle
+ * @param returnNo number of parents to return
  * @returns {{indices: Array, include: Array}} The sets of parents to be combined. Parents will be
  *  combined in order of array, 0 with 1, 2 with 3, etc...
  */
-function selectParents(indices, include){
-    //dummy line to keep jshint happy
-    //TODO remove once function is used
-    weightedRandom([{value: 2}]);
-    //TODO implement function
-    return {indices: indices, include: include};
+function selectParents(indices, include, fitFunc, list, returnNo){
+    var arrs = createScoredArray(indices, include, fitFunc, list); 
+
+    var parentLists = [];
+    var parentIncludes = [];
+    // Get weighted random two at a time to ensure they are not the same
+    for (var i = 0; i < returnNo; i += 2) {
+        var o = weightedRandom(arrs);
+        // TODO figure out correct tolerance - currently 20%
+        while (o.picked >= .2 * returnNo) o = weightedRandom(arrs);
+        o.picked++;
+        var o2 = weightedRandom(arrs);
+        // TODO figure out correct tolerance - currently 20%
+        while ((o.indices == o2.indices && o.list == o2.list) || o2.picked >= .2 * returnNo) o2 = weightedRandom(arrs);
+        o2.picked++;
+        parentLists.push(o.list);
+        parentLists.push(o2.list);
+        parentIncludes.push(o.include);
+        parentIncludes.push(o2.include);
+    }
+    return {indices: parentLists, include: parentIncludes};
 }
 
 /**
