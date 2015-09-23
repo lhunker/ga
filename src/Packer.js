@@ -5,7 +5,7 @@ var fs = require('fs');
  */
 function Packer() {
     this.goal = 0;
-    this.numbers = [];
+    this.list = [];
 }
 
 /**
@@ -25,7 +25,7 @@ Packer.prototype.loadFile = function(file, callback) {
         var i;
         for (i = 1; i < data.length; i++) {
             if (data[i] == '') continue;
-            _this.numbers.push(parseInt(data[i]));
+            _this.list.push(parseInt(data[i]));
         }
 
         callback();
@@ -34,7 +34,7 @@ Packer.prototype.loadFile = function(file, callback) {
 
 Packer.prototype.setGoal = function(goal) {
     this.goal = goal;
-}
+};
 
 /**
  * Calculates fitness via sum, if greater than goal returns 0
@@ -48,6 +48,6 @@ Packer.prototype.fitness = function(numbers) {
         if (sum > this.goal) return 0;
     }
     return sum;
-}
+};
 
 module.exports = Packer;

@@ -3,23 +3,32 @@
  * The main file for the genetic algorithm assignment
  */
 
-//This file will be called from the command line
-//Kick off any processing here
-
-//Simple sample program
 var GA = require('./ga');
-var Packer = require('./Packer');
-var packer = new Packer();
-packer.loadFile('numbers', function() {
-    /*var fitness = function(list){
-      var sum = 0;
-        list.forEach(function (l, i) {
-            sum += l * i;
-        });
-        return sum;
-    };*/
-    //var test = new GA([1,5,7,8,3,9,2], fitness, true, true);
-    var test = new GA(packer.numbers, packer.fitness.bind(packer), true, true);
+var ProbClass;
+var probObj;
 
-    console.info('Solution = ' + test.run(10, 5));
+//Select Problem
+var problem = parseInt(process.argv[2]);
+if (problem === 1) {
+    ProbClass = require('./Packer');
+} else if (problem === 2) {
+    //TODO switch in class 2
+    ProbClass = require('./Packer');
+} else if (problem === 3) {
+    ProbClass = require('./Tower');
+} else {
+    console.error('Enter a valid problem number (1-3)');
+    process.exit();
+}
+
+if (!process.argv[3]) {
+    console.error('Enter a file name');
+    process.exit();
+}
+
+probObj = new ProbClass();
+probObj.loadFile(process.argv[3], function () {
+    var ga = new GA(probObj.list, probObj.fitness.bind(probObj), true, true);
+
+    console.info('Solution = ' + ga.run(10, 5));
 });
