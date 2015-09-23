@@ -64,7 +64,7 @@ GA.prototype.run = function (population, time){
             children.indices.push(nxt.child2);
 
             //Perform boolean crossover
-            var boolChld = booleanCrossover(combine.include[j], combine.include[j + 1]);
+            var boolChld = orderOneCrossover(combine.include[j], combine.include[j + 1], false);
             //TODO check whether both should be crossed
             children.include.push(boolChld.child1);
             children.include.push(boolChld.child2);
@@ -88,7 +88,7 @@ GA.prototype.run = function (population, time){
  * @param include the population in the boolean representation
  * @param fitFunc the fitness function to use to evaluate options
  * @param list the list of all pieces for this puzzle
- * @returns [ {}, ... ] containing indices, include, and score
+ * @returns [{*}] containing indices, include, and score
  */
 function createScoredArray(indices, include, fitFunc, list) {
     var arrs = [];
@@ -283,18 +283,6 @@ function orderOneCrossover(arr1, arr2, switchedArrays) {
 }
 
 /**
- * Combines the two boolean array parents to get two children
- * @param arr1 The first array to combine
- * @param arr2 The second array to combine
- * @returns {{child1: *, child2: *}}
- */
-function booleanCrossover(arr1, arr2) {
-    //TODO implement function
-
-    return {child1: arr1, child2: arr2};
-}
-
-/**
  * Picks a number from the list weighted by its probability
  * @param list An array of objects to pick from.
  *      Objects must have a field value containing their weight
@@ -322,7 +310,7 @@ function weightedRandom(list){
  * Performs num random mutations on the population
  * Each mutation consists of swapping 2 indices and flipping one include
  * @param indices the population as indices
- * @param include the population in boolean inclue representation
+ * @param include the population in boolean include representation
  * @param num The number of mutations to perform
  * @returns {{indices: *, include: *}} The population with mutants
  */
@@ -338,7 +326,6 @@ function mutate(indices, include, num) {
         while (pos2 === pos1) {
             pos2 = _.random(0, indices[member].length - 1);
         }
-        //debug('Swapping ' + member + ' ' + pos1 + ' ' + pos2);
 
         //Perform swap
         var tmp = indices[member][pos1];
