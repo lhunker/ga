@@ -116,11 +116,11 @@ function selectParents(indices, include, fitFunc, list, returnNo){
     for (var i = 0; i < returnNo; i += 2) {
         var o = weightedRandom(arrs);
         // TODO figure out correct tolerance - currently 20%
-        while (o.picked >= .2 * returnNo) o = weightedRandom(arrs);
+        while (o.picked >= 0.2 * returnNo) o = weightedRandom(arrs);
         o.picked++;
         var o2 = weightedRandom(arrs);
         // TODO figure out correct tolerance - currently 20%
-        while ((o.indices == o2.indices && o.list == o2.list) || o2.picked >= .2 * returnNo) o2 = weightedRandom(arrs);
+        while ((o.indices === o2.indices && o.list === o2.list) || o2.picked >= 0.2 * returnNo) o2 = weightedRandom(arrs);
         o2.picked++;
         parentLists.push(o.list);
         parentLists.push(o2.list);
@@ -209,7 +209,7 @@ function booleanArrayGenerator(num){
  * @return [] An array containing objects from the list
  */
 function reconstitute(order, included, list) {
-    debug(order + ' ' + included);
+    //debug(order + ' ' + included);
     var arr = [];
     for (var i = 0; i < included.length; i++) {
         if (included[i]) {
@@ -312,7 +312,7 @@ function weightedRandom(list){
 
     //If nothing is returned
     debug('Something went wrong! ' + sum + ' ' + sel);
-    return list[list.length -1];
+    return list[_.random(list.length - 1)];
 }
 
 /**
@@ -335,7 +335,7 @@ function mutate(indices, include, num) {
         while (pos2 === pos1) {
             pos2 = _.random(0, indices[member].length - 1);
         }
-        debug('Swapping ' + member + ' ' + pos1 + ' ' + pos2);
+        //debug('Swapping ' + member + ' ' + pos1 + ' ' + pos2);
 
         //Perform swap
         var tmp = indices[member][pos1];
@@ -345,7 +345,7 @@ function mutate(indices, include, num) {
         //Randomly flip an include
         var flip = _.random(0, include[member].length - 1);
         include[member][flip] = !include[member][flip];
-        debug('Flipping ' + member + ' ' + flip);
+        //debug('Flipping ' + member + ' ' + flip);
     }
 
     return {indices: indices, include: include};

@@ -18,3 +18,6 @@ function TowerPiece(type, width, strength, cost){
     this.strength = strength;
     this.cost = cost;
 }
+
+//Appease jshint
+new TowerPiece();
