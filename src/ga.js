@@ -59,15 +59,20 @@ GA.prototype.run = function (population, time){
         var combine = selectParents(indices, inclusions, this.fitness, this.list, population);
         var children = {indices: [], include: []};
         for(var j = 0; j < combine.indices.length; j += 2) {
-            var nxt = orderOneCrossover(combine.indices[j], combine.indices[j+1], false);
-            children.indices.push(nxt.child1);
-            children.indices.push(nxt.child2);
+            var nxt = {};
+            if (this.permutate) {
+                nxt = orderOneCrossover(combine.indices[j], combine.indices[j + 1], false);
+            }
+            children.indices.push(nxt.child1 || combine.indices[j]);
+            children.indices.push(nxt.child2 || combine.indices[j + 1]);
 
             //Perform boolean crossover
-            var boolChld = orderOneCrossover(combine.include[j], combine.include[j + 1], false);
-            //TODO check whether both should be crossed
-            children.include.push(boolChld.child1);
-            children.include.push(boolChld.child2);
+            var boolChld;
+            if (this.include) {
+                boolChld = orderOneCrossover(combine.include[j], combine.include[j + 1], false);
+            }
+            children.include.push(boolChld.child1 || combine.include[j]);
+            children.include.push(boolChld.child2 || combine.include[j + 1]);
 
             //TODO make conditional
             //children = mutate(children.indices, children.include, 2);
@@ -80,8 +85,8 @@ GA.prototype.run = function (population, time){
     }
 
     console.log('Generations: ' + generations); //TODO move to app
-    best = findBest(indices, inclusions, this.list, this.fitness);
-    return best.toString() + ", score: " + this.fitness(best).toString();
+    var best = findBest(indices, inclusions, this.list, this.fitness);
+    return best.toString() + ', score: ' + this.fitness(best).toString();
 };
 
 /**
@@ -360,15 +365,19 @@ function mutate(indices, include, num) {
             pos2 = _.random(0, indices[member].length - 1);
         }
 
-        //Perform swap
-        var tmp = indices[member][pos1];
-        indices[member][pos1] = indices[member][pos2];
-        indices[member][pos2] = tmp;
+        if (this.permutate) {
+            //Perform swap
+            var tmp = indices[member][pos1];
+            indices[member][pos1] = indices[member][pos2];
+            indices[member][pos2] = tmp;
+        }
 
-        //Randomly flip an include
-        var flip = _.random(0, include[member].length - 1);
-        include[member][flip] = !include[member][flip];
-        //debug('Flipping ' + member + ' ' + flip);
+        if (this.include) {
+            //Randomly flip an include
+            var flip = _.random(0, include[member].length - 1);
+            include[member][flip] = !include[member][flip];
+            //debug('Flipping ' + member + ' ' + flip);
+        }
     }
 
     return {indices: indices, include: include};
