@@ -24,11 +24,15 @@ if (!process.argv[3]) {
     console.error('Enter a file name');
     process.exit();
 }
+if (!process.argv[4] || !parseInt(process.argv[4])) {
+    console.error('Enter a run time');
+    process.exit();
+}
 
 probObj = new ProbClass();
 probObj.loadFile(process.argv[3], function () {
     var ga = new GA(probObj.list, probObj.fitness.bind(probObj),
         probObj.permutate, probObj.include);
 
-    console.info('Solution = ' + ga.run(10, 5));
+    console.info('Solution = ' + ga.run(10, parseInt(process.argv[4])));
 });
