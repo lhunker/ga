@@ -4,16 +4,80 @@
  * The class defining the Tower object
  */
 
+var fs = require('fs');
+var parse = require('csv-parse');
+
 /**
  * The constructor for the Tower class
- * @param pieces An array of tower pieces
  * @constructor
  */
-function Tower(pieces){
-    this.pieces = pieces;
+function Tower(){
+    this.list = [];
+    this.permutate = true;
+    this.include = true;
 }
 
-//TODO refactor and use functional everywhere, or do OOP and use this.pieces
+//TODO refactor and use functional everywhere, or do OOP and use this.list
+
+/**
+ * Loads a set of pieces from a given file
+ * @param file String containing the filename
+ * @param callback Function to run after loading the file
+ */
+Tower.prototype.loadFile = function(file, callback) {
+    // to maintain scoping
+    var _this = this;
+
+    // crete parser for each line
+    var parser = parse({delimiter: '\t'});
+    var data = [];
+
+    // create variables to make tower pieces
+    var type;
+    var width;
+    var strength;
+    var cost;
+
+    // while parsing, append data
+    parser.on('readable', function() {
+        var record;
+        while ((record = parser.read())) {
+            data.push(record)
+        }
+    });
+
+    // log errors
+    parser.on('error', function(err) {
+        console.error(err.message);
+    });
+
+    // on finish, parse each line
+    parser.on('finish', function() {
+        for (var i = 0; i < data.length; i++) {
+            // set the tower piece variables
+            type = data[i][0];
+            width = parseInt(data[i][1]);
+            strength = parseInt(data[i][2]);
+            cost = parseInt(data[i][3]);
+
+            // create a tower piece from the variables and push it to this.list
+            _this.list.push({type: type, width: width, strength: strength, cost: cost});
+        }
+
+        // go to the callback
+        callback();
+    });
+
+    // read specified file
+    fs.readFile(file, 'utf8', function(err, data){
+        if (err) {
+            console.error('Error opening file: ' +  err);
+            process.exit(2);
+        }
+        parser.write(data);
+        parser.end();
+    });
+};
 
 /**
  * Checks to see if a tower is legal
@@ -30,7 +94,7 @@ Tower.prototype.isLegal = function isLegalTower(tower){
  * @return {boolean} true if the Tower follows rule 1
  */
 function followsRule1(tower){
-    return (tower.pieces[0].type === 'Door');
+    return (tower[0].type === 'Door');
 }
 
 /**
@@ -39,9 +103,9 @@ function followsRule1(tower){
  * @return {boolean} true if the Tower follows rule 2
  */
 function followsRule2(tower){
-    var length = tower.pieces.length;
+    var length = tower.length;
     var lengthIndex = length - 1;
-    return (tower.pieces[lengthIndex].type === 'Lookout');
+    return (tower[lengthIndex].type === 'Lookout');
 }
 
 /**
@@ -50,10 +114,10 @@ function followsRule2(tower){
  * @return {boolean} true if the Tower follows rule 3
  */
 function followsRule3(tower){
-    var length = tower.pieces.length;
+    var length = tower.length;
     var lengthIndex = length - 1;
     for (var i = 1; i < lengthIndex; i++){
-        if (tower.pieces[i].type !== 'Wall'){
+        if (tower[i].type !== 'Wall'){
             return false;
         }
     }
@@ -66,10 +130,10 @@ function followsRule3(tower){
  * @return {boolean} true if the Tower follows rule 4
  */
 function followsRule4(tower){
-    var length = tower.pieces.length;
+    var length = tower.length;
     var i;
     for (i = 1; i < length; i++){
-        if (tower.pieces[i].width > tower.pieces[i-1].width){
+        if (tower[i].width > tower[i-1].width){
             return false;
         }
     }
@@ -82,7 +146,7 @@ function followsRule4(tower){
  * @return {boolean} true if the Tower follows rule 5
  */
 function followsRule5(tower){
-    var length = tower.pieces.length;
+    var length = tower.length;
     var i;
     var j;
     var numPiecesAbove;
@@ -91,7 +155,7 @@ function followsRule5(tower){
         for (j = i + 1; j < length; j++){
             numPiecesAbove++;
         }
-        if (numPiecesAbove > tower.pieces[i].strength){
+        if (numPiecesAbove > tower[i].strength){
             return false;
         }
     }
@@ -100,15 +164,15 @@ function followsRule5(tower){
 
 /**
  * Returns the score of the given Tower
- * @param tower The Tower being scored
+ * @param tower The list of pieces being scored
  * @return {Number} The score of the Tower
  */
-Tower.prototype.score = function towerScore(tower){
-    var height = tower.pieces.length;
+Tower.prototype.fitness = function towerScore(tower){
+    var height = tower.length;
     var totalCost = 0;
     var i;
     for (i = 0; i < height; i++){
-        totalCost += tower.pieces[i].cost;
+        totalCost += tower[i].cost;
     }
     if (this.isLegal(tower)){
         return (10 + Math.pow(height, 2) - totalCost);
