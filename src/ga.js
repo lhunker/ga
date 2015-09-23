@@ -61,23 +61,19 @@ GA.prototype.run = function (population, time){
             var nxt = orderOneCrossover(combine.indices[j], combine.indices[j+1], false);
             children.indices.push(nxt.child1);
             children.indices.push(nxt.child2);
-            //TODO crossover booleans (currently just copies parent)
+
+            //Perform boolean crossover
+            var boolChld = booleanCrossover(combine.include[j], combine.include[j + 1]);
             //TODO check whether both should be crossed
-            children.include.push(combine.include[j]);
-            children.include.push(combine.include[j+1]);
-
-
+            children.include.push(boolChld.child1);
+            children.include.push(boolChld.child2);
         }
         //TODO implement mutation
-        //TODO implement elitism?
-        //TODO cull children?
+        //TODO implement elitism option
+        //TODO cull population option
         indices = children.indices;
         inclusions = children.include;
     }
-
-    //dummy line to keep jshint happy
-    //TODO remove once function is used
-    weightedRandom([{value:2}]);
 
     return findBest(indices, inclusions, this.list, this.fitness);
 };
@@ -90,6 +86,9 @@ GA.prototype.run = function (population, time){
  *  combined in order of array, 0 with 1, 2 with 3, etc...
  */
 function selectParents(indices, include){
+    //dummy line to keep jshint happy
+    //TODO remove once function is used
+    weightedRandom([{value: 2}]);
     //TODO implement function
     return {indices: indices, include: include};
 }
@@ -239,6 +238,18 @@ function orderOneCrossover(arr1, arr2, switchedArrays) {
         return child1;
     }
     return {child1: child1, child2: child2};
+}
+
+/**
+ * Combines the two boolean array parents to get two children
+ * @param arr1 The first array to combine
+ * @param arr2 The second array to combine
+ * @returns {{child1: *, child2: *}}
+ */
+function booleanCrossover(arr1, arr2) {
+    //TODO implement function
+
+    return {child1: arr1, child2: arr2};
 }
 
 /**
