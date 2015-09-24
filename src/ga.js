@@ -53,6 +53,9 @@ GA.prototype.run = function (population, time){
     var start = moment();
     var end = moment(start).add(time, 's'); //TODO assuming seconds for now
     var generations = 0;
+    var bestList = [];
+    var bestScore = 0;
+    var bestGen = 0;
     while (moment().isBefore(end)) {
         generations++;
         // TODO update the last argument to reflect true number of parents to return
@@ -73,6 +76,12 @@ GA.prototype.run = function (population, time){
             }
             children.include.push(boolChld.child1 || combine.include[j]);
             children.include.push(boolChld.child2 || combine.include[j + 1]);
+            var newBest = findBest(children.indices, children.include, this.list, this.fitness);
+            if (this.fitness(newBest) > bestScore) {
+                bestList = newBest;
+                bestScore = this.fitness(newBest);
+                bestGen = generations;
+            }
 
             if (process.env.MUTATE) {
                 children = mutate(children.indices, children.include, process.env.MUTATE);
@@ -87,7 +96,8 @@ GA.prototype.run = function (population, time){
 
     console.log('Generations: ' + generations); //TODO move to app
     var best = findBest(indices, inclusions, this.list, this.fitness);
-    return JSON.stringify(best) + ', score: ' + JSON.stringify(this.fitness(best));
+    return JSON.stringify(best) + ', score: ' + JSON.stringify(this.fitness(best)) + ', generation: ' + generations + 
+           ', Best overall: ' + JSON.stringify(bestList) + ' , score: ' + bestScore + ', generation: ' + bestGen;
 };
 
 /**
