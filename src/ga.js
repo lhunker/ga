@@ -6,6 +6,7 @@
 var debug = require('debug')('ga');
 var _ = require('underscore');
 var moment = require('moment');
+var OUT_FREQ = 500; //How many generations to output the current score after
 
 /**
  * The constructor for the GA class - used to run a genetic algorithm
@@ -76,20 +77,30 @@ GA.prototype.run = function (population, time){
             }
             children.include.push(boolChld.child1 || combine.include[j]);
             children.include.push(boolChld.child2 || combine.include[j + 1]);
-            var newBest = findBest(children.indices, children.include, this.list, this.fitness);
-            if (this.fitness(newBest) > bestScore) {
-                bestList = newBest;
-                bestScore = this.fitness(newBest);
-                bestGen = generations;
-            }
 
             if (process.env.MUTATE) {
                 children = mutate(children.indices, children.include, process.env.MUTATE);
             }
+
+
         }
         //TODO implement elitism option
         //TODO make conditional, this also won't do anything since being reassigned right below
         //cull(createScoredArray(indices, inclusions, this.fitness, this.list));
+
+        //Find generation best
+        var newBest = findBest(children.indices, children.include, this.list, this.fitness);
+        if (this.fitness(newBest) > bestScore) {
+            bestList = newBest;
+            bestScore = this.fitness(newBest);
+            bestGen = generations;
+        }
+
+        //Print best score if multiple of desired frequency
+        if (generations % OUT_FREQ === 0 || generations === 1) {
+            console.log('At generation ' + generations + ' best score: ' + this.fitness(newBest));
+        }
+
         indices = children.indices;
         inclusions = children.include;
     }
