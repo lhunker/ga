@@ -329,8 +329,17 @@ function orderOneCrossover(arr1, arr2, switchedArrays) {
  */
 function weightedRandom(list){
     var sum = 0;
+    var min = 0;
+    // If any values below 0, find lowest
     list.forEach(function (item){
-       sum += item.value;
+        if (item.value < min) min = item.value;
+    });
+    // Make min positive
+    min *= -1;
+    // Offset by min
+    list.forEach(function (item){
+        item.value += Math.abs(min);
+        sum += item.value;
         item.range = sum;
     });
     var sel = _.random(0, sum - 1);
