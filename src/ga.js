@@ -59,7 +59,6 @@ GA.prototype.run = function (population, time){
     var bestGen = 0;
     while (moment().isBefore(end)) {
         generations++;
-        // TODO update the last argument to reflect true number of parents to return
         var combine = selectParents(indices, inclusions, this.fitness, this.list, population);
         var children = {indices: [], include: []};
         for(var j = 0; j < combine.indices.length; j += 2) {
@@ -108,10 +107,9 @@ GA.prototype.run = function (population, time){
         inclusions = children.include;
     }
 
-    console.log('Generations: ' + generations); //TODO move to app
     var best = findBest(indices, inclusions, this.list, this.fitness);
-    return JSON.stringify(best) + ', score: ' + JSON.stringify(this.fitness(best)) + ', generation: ' + generations + 
-           ', Best overall: ' + JSON.stringify(bestList) + ' , score: ' + bestScore + ', generation: ' + bestGen;
+    return {last: JSON.stringify(best), score: JSON.stringify(this.fitness(best)), gen: generations, 
+            best: JSON.stringify(bestList), bScore: bestScore, bGen: bestGen, tGen: generations};
 };
 
 /**
