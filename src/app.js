@@ -36,6 +36,6 @@ probObj.loadFile(process.argv[3], function () {
 
     var result = ga.run(250, parseInt(process.argv[4]));
     console.info('Total generations: ' + result.tGen);
-    console.info('Best solution: ' + result.best + ', best score: ' + result.bScore + ', best generation: ' + result.bGen);
-    console.info('Last solution: ' + result.last + ', score: ' + result.score);
+    console.info('Best solution: ' + probObj.printResults(result.best) + ', best score: ' + result.bScore + ', best generation: ' + result.bGen);
+    console.info('Last solution: ' + probObj.printResults(result.last) + ', score: ' + result.score);
 });

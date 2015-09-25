@@ -56,4 +56,13 @@ Packer.prototype.fitness = function(numbers) {
     return sum;
 };
 
+/**
+ * Formats the print string
+ * @param values an array of values
+ * @returns {string}
+ */
+Packer.prototype.printResults = function(values){
+    return values.join(', ');
+};
+
 module.exports = Packer;

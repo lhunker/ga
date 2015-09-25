@@ -120,8 +120,8 @@ GA.prototype.run = function (population, time){
     }
 
     var best = findBest(indices, inclusions, this.list, this.fitness);
-    return {last: JSON.stringify(best), score: JSON.stringify(this.fitness(best)), gen: generations, 
-            best: JSON.stringify(bestList), bScore: bestScore, bGen: bestGen, tGen: generations};
+    return {last: best, score: JSON.stringify(this.fitness(best)), gen: generations,
+            best: bestList, bScore: bestScore, bGen: bestGen, tGen: generations};
 };
 
 /**

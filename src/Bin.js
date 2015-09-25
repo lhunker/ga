@@ -50,4 +50,26 @@ Bin.prototype.fitness = function(numbers) {
     return (score + score2) / 2;
 };
 
+/**
+ * Formats the print string
+ * @param values an array of values
+ * @returns {string}
+ */
+Bin.prototype.printResults = function(values){
+    var i;
+    var s = 'Bin 1: ' + values[0];
+    for (i = 1; i < 10; i++){
+        s += ', ' + values[i];
+    }
+    s += '\nBin 2: ' + values[10];
+    for (i = 11; i < 20; i++){
+        s += ', ' + values[i];
+    }
+    s += '\nBin 3: ' + values[20];
+    for (i = 21; i < 30; i++){
+        s += ', ' + values[i];
+    }
+    return s;
+};
+
 module.exports = Bin;

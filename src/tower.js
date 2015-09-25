@@ -26,7 +26,7 @@ Tower.prototype.loadFile = function(file, callback) {
     // to maintain scoping
     var _this = this;
 
-    // crete parser for each line
+    // create parser for each line
     var parser = parse({delimiter: '\t'});
     var data = [];
 
@@ -181,6 +181,20 @@ Tower.prototype.fitness = function towerScore(tower){
     else {
         return 0;
     }
+};
+
+/**
+ * Formats the print string
+ * @param values an array of values
+ * @returns {string}
+ */
+Tower.prototype.printResults = function(values){
+    var i;
+    var s = '';
+    for (i = 0; i < values.length; i++){
+        s += 'Piece ' + (i+1) + ' is a ' + values[i].type + ' with width ' + values[i].width + ', strength ' + values[i].strength + ', and cost ' + values[i].cost + '.\n';
+    }
+    return s;
 };
 
 module.exports = Tower;
