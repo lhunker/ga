@@ -73,7 +73,7 @@ GA.prototype.run = function (population, time){
             //Perform boolean crossover
             var boolChld = {};
             if (this.include) {
-                boolChld = orderOneCrossover(combine.include[j], combine.include[j + 1], false);
+                boolChld = booleanCrossover(combine.include[j], combine.include[j + 1]);
             }
             children.include.push(boolChld.child1 || combine.include[j]);
             children.include.push(boolChld.child2 || combine.include[j + 1]);
@@ -110,6 +110,26 @@ GA.prototype.run = function (population, time){
     return JSON.stringify(best) + ', score: ' + JSON.stringify(this.fitness(best)) + ', generation: ' + generations + 
            ', Best overall: ' + JSON.stringify(bestList) + ' , score: ' + bestScore + ', generation: ' + bestGen;
 };
+
+/**
+ * Does a simple crossover for an array where repeats don't matter
+ * @param arr1 the first array
+ * @param arr2 the second array
+ * @returns {{child1: *, child2: *}} the resulting crossover
+ */
+function booleanCrossover(arr1, arr2) {
+    var start = _.random(0, arr1.length - 1);
+    // Select a length to keep
+    var len = _.random(1, arr1.length - start);
+    var child1 = [];
+    child1 = child1.concat(arr1.slice(0, start), arr2.slice(start, start + len),
+        arr1.slice(start + len));
+    var child2 = [];
+    child2 = child2.concat(arr2.slice(0, start), arr1.slice(start, start + len),
+        arr2.slice(start + len));
+
+    return {child1: child1, child2: child2};
+}
 
 /**
  * Selects array members to kill using tournament selection
@@ -354,6 +374,9 @@ function weightedRandom(list){
     });
     // Make min positive
     min *= -1;
+    if (min === 0) {
+        min = 1;
+    }
     // Offset by min
     list.forEach(function (item){
         item.value += Math.abs(min);
