@@ -28,7 +28,7 @@ function GA(list, fitness, permutate, include){
  * Runs the algorithm for for a specific time and population
  * @param population the population size to work with
  * @param time the wall clock time to run the algorithm
- * @return [] The best solution from the genetic algorithm
+ * @return {} Runtime data collected including generations, scores, and arrays
  */
 GA.prototype.run = function (population, time){
     var indices = [];
