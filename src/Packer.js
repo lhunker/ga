@@ -26,7 +26,7 @@ Packer.prototype.loadFile = function(file, callback) {
         _this.setGoal(parseInt(data[0]));
         var i;
         for (i = 1; i < data.length; i++) {
-            if (data[i] == '') continue;
+            if (data[i] === '') continue;
             _this.list.push(parseInt(data[i]));
         }
 
