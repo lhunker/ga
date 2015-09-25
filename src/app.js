@@ -34,7 +34,7 @@ probObj.loadFile(process.argv[3], function () {
     var ga = new GA(probObj.list, probObj.fitness.bind(probObj),
         probObj.permutate, probObj.include);
 
-    result = ga.run(250, parseInt(process.argv[4]));
+    var result = ga.run(250, parseInt(process.argv[4]));
     console.info('Total generations: ' + result.tGen);
     console.info('Best solution: ' + result.best + ', best score: ' + result.bScore + ', best generation: ' + result.bGen);
     console.info('Last solution: ' + result.last + ', score: ' + result.score);

@@ -50,4 +50,4 @@ Bin.prototype.fitness = function(numbers) {
     return (score + score2) / 2;
 };
 
-module.exports = Bin
+module.exports = Bin;
