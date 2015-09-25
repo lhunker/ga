@@ -194,6 +194,11 @@ function cull(pieces) {
             inclusions.push(minObject.include);
         }
     }
+
+    for (var i = process.env.CULL; i < pieces.length; i++) {
+        indices.push(pieces[i].indices);
+        inclusions.push(pieces[i].include);
+    }
     return {indices: indices, inclusions: inclusions};
 }
 
