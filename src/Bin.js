@@ -4,7 +4,7 @@ var fs = require('fs');
  * Constructs an empty bin object
  */
 function Bin() {
-    this.list = []
+    this.list = [];
     this.permutate = true;
     this.include = false;
 }
@@ -24,7 +24,7 @@ Bin.prototype.loadFile = function(file, callback) {
 
         data = data.split('\n');
         for (var i = 0; i < data.length; i++) {
-            if (data[i] == '') continue;
+            if (data[i] === '') continue;
             _this.list.push(parseFloat(data[i]));
         }
 

@@ -40,7 +40,7 @@ Tower.prototype.loadFile = function(file, callback) {
     parser.on('readable', function() {
         var record;
         while ((record = parser.read())) {
-            data.push(record)
+            data.push(record);
         }
     });
 
