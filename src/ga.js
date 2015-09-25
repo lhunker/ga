@@ -180,7 +180,7 @@ function booleanCrossover(arr1, arr2) {
 function cull(pieces) {
     var indices = [];
     var inclusions = [];
-    for (var i = 0; i < pieces.length; i += 2) {
+    for (var i = 0; i < process.env.CULL; i += 2) {
         var obj1 = pieces[i];
         var obj2 = pieces[i + 1];
 
