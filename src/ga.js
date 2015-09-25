@@ -7,7 +7,6 @@ var debug = require('debug')('ga');
 var _ = require('underscore');
 var moment = require('moment');
 var OUT_FREQ = 500; //How many generations to output the current score after
-var CULL_NO = 50; // How many elements to cull
 
 /**
  * The constructor for the GA class - used to run a genetic algorithm
@@ -142,7 +141,7 @@ function booleanCrossover(arr1, arr2) {
 function cull(pieces) {
     var indices = [];
     var inclusions = [];
-    for (var i = 0; i < CULL_NO; i += 2) {
+    for (var i = 0; i < process.env.CULL; i += 2) {
         var obj1 = pieces[i];
         var obj2 = pieces[i + 1];
 
