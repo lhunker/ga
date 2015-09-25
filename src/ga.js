@@ -98,7 +98,7 @@ GA.prototype.run = function (population, time){
 
         //Print best score if multiple of desired frequency
         if (generations % OUT_FREQ === 0 || generations === 1) {
-            console.log('At generation ' + generations + ' best score: ' + this.fitness(newBest));
+            console.log('At generation ' + generations + ' best score: ' + this.fitness(newBest) + ', array: ' + newBest);
         }
 
         indices = children.indices;
@@ -166,6 +166,7 @@ function createScoredArray(indices, include, fitFunc, list) {
  *  combined in order of array, 0 with 1, 2 with 3, etc...
  */
 function selectParents(indices, include, fitFunc, list, returnNo){
+    var orig = reconstitute(indices, include, list);
     var arrs = createScoredArray(indices, include, fitFunc, list); 
 
     var parentLists = [];
@@ -175,16 +176,12 @@ function selectParents(indices, include, fitFunc, list, returnNo){
         var j = weightedRandom(arrs);
         var jScore = arrs[j].value;
         arrs[j].value = 0;
-        //arrs[j].value -= 2;
-        //if (arrs[j].value <= 0)
-            //arrs[j].value = 1;
         var j2 = weightedRandom(arrs);
         while (j === j2)
             j2 = weightedRandom(arrs);
         arrs[j].value = jScore;
-        //arrs[j2].value -= 2;
-        //if (arrs[j2].value <= 0)
-            //arrs[j2].value = 1;
+        arrs[j].value /= 2;
+        arrs[j2].value /= 2;
         parentLists.push(arrs[j].indices);
         parentLists.push(arrs[j2].indices);
         parentIncludes.push(arrs[j].include);
