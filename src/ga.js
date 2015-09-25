@@ -85,8 +85,11 @@ GA.prototype.run = function (population, time){
 
         }
         //TODO implement elitism option
-        //TODO make conditional, this also won't do anything since being reassigned right below
-        //cull(createScoredArray(indices, inclusions, this.fitness, this.list));
+        if (process.env.CULL) {
+            var cullRes = cull(createScoredArray(children.indices, children.include, this.fitness, this.list));
+            children.indices = cullRes.indices;
+            children.include = cullRes.inclusions;
+        }
 
         //Find generation best
         var newBest = findBest(children.indices, children.include, this.list, this.fitness);

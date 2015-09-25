@@ -34,5 +34,5 @@ probObj.loadFile(process.argv[3], function () {
     var ga = new GA(probObj.list, probObj.fitness.bind(probObj),
         probObj.permutate, probObj.include);
 
-    console.info('Solution = ' + ga.run(10, parseInt(process.argv[4])));
+    console.info('Solution = ' + ga.run(250, parseInt(process.argv[4])));
 });
