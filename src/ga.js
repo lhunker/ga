@@ -6,7 +6,7 @@
 var debug = require('debug')('ga');
 var _ = require('underscore');
 var moment = require('moment');
-var OUT_FREQ = 500; //How many generations to output the current score after
+var OUT_FREQ = 50; //How many generations to output the current score after
 
 /**
  * The constructor for the GA class - used to run a genetic algorithm
@@ -59,7 +59,14 @@ GA.prototype.run = function (population, time){
     var bestGen = 0;
     while (moment().isBefore(end)) {
         generations++;
-        var combine = selectParents(indices, inclusions, this.fitness, this.list, population);
+        var numNew = population;
+        if (process.env.CULL) {
+            numNew += process.env.CULL;
+        }
+        if (process.env.ELITE) {
+            numNew -= process.env.ELITE;
+        }
+        var combine = selectParents(indices, inclusions, this.fitness, this.list, numNew);
         var children = {indices: [], include: []};
         for(var j = 0; j < combine.indices.length; j += 2) {
             var nxt = {};
@@ -83,7 +90,12 @@ GA.prototype.run = function (population, time){
 
 
         }
-        //TODO implement elitism option
+        if (process.env.ELITE) {
+            var topPerf = elitism(children.indices, children.include, this.list, this.fitness,
+                process.env.CULL);
+            children.include = children.include.concat(topPerf.include);
+            children.indices = children.indices.concat(topPerf.indices);
+        }
         if (process.env.CULL) {
             var cullRes = cull(createScoredArray(children.indices, children.include, this.fitness, this.list));
             children.indices = cullRes.indices;
@@ -111,6 +123,33 @@ GA.prototype.run = function (population, time){
     return {last: JSON.stringify(best), score: JSON.stringify(this.fitness(best)), gen: generations, 
             best: JSON.stringify(bestList), bScore: bestScore, bGen: bestGen, tGen: generations};
 };
+
+/**
+ * Picks the top number of items from the list
+ * @param indices indices representation of the population
+ * @param include boolean representation of population
+ * @param list the entire playable pieces
+ * @param fitness the fitness function
+ * @param number the number of the population to return
+ * @returns {{indices: Array, include: Array}} the top performers
+ */
+function elitism(indices, include, list, fitness, number) {
+    var all = createScoredArray(indices, include, fitness, list);
+    var sorted = _.sortBy(all, function (item) {
+        return item.value;
+    });
+
+    var top = sorted.slice(0, number);
+    var newIndices = [];
+    var newInclude = [];
+    top.forEach(function (item) {
+        newInclude.push(item.include);
+        newIndices.push(item.indices);
+    });
+
+    return {indicies: newIndices, include: newInclude};
+
+}
 
 /**
  * Does a simple crossover for an array where repeats don't matter
@@ -187,8 +226,7 @@ function createScoredArray(indices, include, fitFunc, list) {
  *  combined in order of array, 0 with 1, 2 with 3, etc...
  */
 function selectParents(indices, include, fitFunc, list, returnNo){
-    var orig = reconstitute(indices, include, list);
-    var arrs = createScoredArray(indices, include, fitFunc, list); 
+    var arrs = createScoredArray(indices, include, fitFunc, list);
 
     var parentLists = [];
     var parentIncludes = [];
