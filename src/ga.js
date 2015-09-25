@@ -52,7 +52,7 @@ GA.prototype.run = function (population, time){
 
     //while within time do generation
     var start = moment();
-    var end = moment(start).add(time, 's'); //TODO assuming seconds for now
+    var end = moment(start).add(time, 's');
     var generations = 0;
     var bestList = [];
     var bestScore = 0;

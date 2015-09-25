@@ -17,8 +17,6 @@ function Tower(){
     this.include = true;
 }
 
-//TODO refactor and use functional everywhere, or do OOP and use this.list
-
 /**
  * Loads a set of pieces from a given file
  * @param file String containing the filename
