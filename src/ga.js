@@ -61,10 +61,10 @@ GA.prototype.run = function (population, time){
         generations++;
         var numNew = population;
         if (process.env.CULL) {
-            numNew += process.env.CULL;
+            numNew += parseInt(process.env.CULL);
         }
         if (process.env.ELITE) {
-            numNew -= process.env.ELITE;
+            numNew -= parseInt(process.env.ELITE);
         }
         var combine = selectParents(indices, inclusions, this.fitness, this.list, numNew);
         var children = {indices: [], include: []};
@@ -92,7 +92,7 @@ GA.prototype.run = function (population, time){
         }
         if (process.env.ELITE) {
             var topPerf = elitism(children.indices, children.include, this.list, this.fitness,
-                process.env.CULL);
+                parseInt(process.env.ELITE));
             children.include = children.include.concat(topPerf.include);
             children.indices = children.indices.concat(topPerf.indices);
         }
@@ -112,7 +112,7 @@ GA.prototype.run = function (population, time){
 
         //Print best score if multiple of desired frequency
         if (generations % OUT_FREQ === 0 || generations === 1) {
-            console.log('At generation ' + generations + ' best score: ' + this.fitness(newBest) + ', array: ' + newBest);
+            console.log('At generation ' + generations + ' best score: ' + this.fitness(newBest) + ', array: ' + JSON.stringify(newBest));
         }
 
         indices = children.indices;
@@ -147,7 +147,7 @@ function elitism(indices, include, list, fitness, number) {
         newIndices.push(item.indices);
     });
 
-    return {indicies: newIndices, include: newInclude};
+    return {indices: newIndices, include: newInclude};
 
 }
 

@@ -172,7 +172,10 @@ Tower.prototype.fitness = function towerScore(tower){
     for (i = 0; i < height; i++){
         totalCost += tower[i].cost;
     }
-    if (this.isLegal(tower)){
+    if (height === 0) {
+        return 0;
+    }
+    else if (this.isLegal(tower)){
         return (10 + Math.pow(height, 2) - totalCost);
     }
     else {
