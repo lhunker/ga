@@ -30,7 +30,7 @@ Bin.prototype.loadFile = function(file, callback) {
 
         callback();
     });
-}
+};
 /**
  * Fitness function for Bin
  * Multiplies Bin 1 numbers and adds Bin 2
