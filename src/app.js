@@ -34,8 +34,9 @@ probObj.loadFile(process.argv[3], function () {
     var ga = new GA(probObj.list, probObj.fitness.bind(probObj),
         probObj.permutate, probObj.include);
 
-    var result = ga.run(250, parseInt(process.argv[4]));
+    var result = ga.run(500, parseInt(process.argv[4]));
     console.info('Total generations: ' + result.tGen);
-    console.info('Best solution: ' + probObj.printResults(result.best) + ', best score: ' + result.bScore + ', best generation: ' + result.bGen);
-    console.info('Last solution: ' + probObj.printResults(result.last) + ', score: ' + result.score);
+    console.info('Best solution:\n' + probObj.printResults(result.best) + '\nBest score: ' + result.bScore + ' best generation: ' + result.bGen);
+    console.info('---------------------------------------\n');
+    console.info('Last solution: ' + probObj.printResults(result.last) + '\nScore: ' + result.score);
 });

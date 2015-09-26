@@ -6,7 +6,7 @@
 var debug = require('debug')('ga');
 var _ = require('underscore');
 var moment = require('moment');
-var OUT_FREQ = 50; //How many generations to output the current score after
+var OUT_FREQ = 25; //How many generations to output the current score after
 
 /**
  * The constructor for the GA class - used to run a genetic algorithm
@@ -91,7 +91,7 @@ GA.prototype.run = function (population, time){
 
         }
         if (process.env.ELITE) {
-            var topPerf = elitism(children.indices, children.include, this.list, this.fitness,
+            var topPerf = elitism(indices, inclusions, this.list, this.fitness,
                 parseInt(process.env.ELITE));
             children.include = children.include.concat(topPerf.include);
             children.indices = children.indices.concat(topPerf.indices);
@@ -113,6 +113,7 @@ GA.prototype.run = function (population, time){
         //Print best score if multiple of desired frequency
         if (generations % OUT_FREQ === 0 || generations === 1) {
             console.log('At generation ' + generations + ' best score: ' + this.fitness(newBest) + ', array: ' + JSON.stringify(newBest));
+            //console.info(this.fitness(newBest));
         }
 
         indices = children.indices;
@@ -138,6 +139,7 @@ function elitism(indices, include, list, fitness, number) {
     var sorted = _.sortBy(all, function (item) {
         return item.value;
     });
+    sorted.reverse();
 
     var top = sorted.slice(0, number);
     var newIndices = [];
@@ -180,7 +182,7 @@ function booleanCrossover(arr1, arr2) {
 function cull(pieces) {
     var indices = [];
     var inclusions = [];
-    for (var i = 0; i < process.env.CULL; i += 2) {
+    for (var i = 0; i < parseInt(process.env.CULL); i += 2) {
         var obj1 = pieces[i];
         var obj2 = pieces[i + 1];
 
@@ -195,7 +197,7 @@ function cull(pieces) {
         }
     }
 
-    for (var i = process.env.CULL; i < pieces.length; i++) {
+    for (i = process.env.CULL; i < pieces.length; i++) {
         indices.push(pieces[i].indices);
         inclusions.push(pieces[i].include);
     }
