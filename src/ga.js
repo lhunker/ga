@@ -359,7 +359,6 @@ function orderOneCrossover(arr1, arr2, switchedArrays) {
     if (len === 0) {
         len = 1;
     }
-    //debug('Start: ' + start + ', Length: ' + len);
 
     // Create child1 from that range
     var child1 = arr1.slice(start, start + len);
