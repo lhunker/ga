@@ -113,7 +113,7 @@ GA.prototype.run = function (population, time){
         //Print best score if multiple of desired frequency
         if (generations % OUT_FREQ === 0 || generations === 1) {
             console.log('At generation ' + generations + ' best score: ' + this.fitness(newBest) + ', array: ' + JSON.stringify(newBest));
-            //console.info(this.fitness(newBest));
+
         }
 
         indices = children.indices;
