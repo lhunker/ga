@@ -87,9 +87,8 @@ GA.prototype.run = function (population, time){
             if (process.env.MUTATE) {
                 children = mutate(children.indices, children.include, process.env.MUTATE);
             }
-
-
         }
+
         if (process.env.ELITE) {
             var topPerf = elitism(indices, inclusions, this.list, this.fitness,
                 parseInt(process.env.ELITE));
@@ -113,7 +112,6 @@ GA.prototype.run = function (population, time){
         //Print best score if multiple of desired frequency
         if (generations % OUT_FREQ === 0 || generations === 1) {
             console.log('At generation ' + generations + ' best score: ' + this.fitness(newBest) + ', array: ' + JSON.stringify(newBest));
-            //console.info(this.fitness(newBest));
         }
 
         indices = children.indices;
@@ -354,8 +352,6 @@ function reconstitute(order, included, list) {
  * @return Object containing child1 array and child2 array
  */
 function orderOneCrossover(arr1, arr2, switchedArrays) {
-    //debug('Array 1: ' + arr1.join(', '));
-    //debug('Array 2: ' + arr2.join(', '));
     // Select a random starting point at least one away from the end
     var start = _.random(0, arr1.length - 1);
     // Select a length to keep
@@ -367,7 +363,6 @@ function orderOneCrossover(arr1, arr2, switchedArrays) {
 
     // Create child1 from that range
     var child1 = arr1.slice(start, start + len);
-    //debug('Child 1: ' + child1.join(', '));
     var parent2 = [];
     var i;
 
@@ -380,7 +375,6 @@ function orderOneCrossover(arr1, arr2, switchedArrays) {
     for (i = 0; i < child1.length; i++) {
         parent2.splice(parent2.indexOf(child1[i]), 1);
     }
-    //debug('Updated array 2: ' + parent2.join(', '));
     // Copy values at right edge of array, - 1 because indexes aren't inclusive
     var rightCount = arr2.length - start - len;
     var leftCount = parent2.length - rightCount;
@@ -392,7 +386,6 @@ function orderOneCrossover(arr1, arr2, switchedArrays) {
     for (i = leftCount - 1; i >= 0; i--) {
         child1.splice(0, 0, parent2[i]);
     }
-    //debug('Completed child 1: ' + child1.join(', '));
 
     //Either generate second child or return
     var child2;
@@ -473,7 +466,6 @@ function mutate(indices, include, num) {
             //Randomly flip an include
             var flip = _.random(0, include[member].length - 1);
             include[member][flip] = !include[member][flip];
-            //debug('Flipping ' + member + ' ' + flip);
         }
     }
 
